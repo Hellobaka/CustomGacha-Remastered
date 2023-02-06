@@ -8,18 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Honkai3Gacha_Remastered
+namespace GachaCoreUI
 {
-    public partial class MainForm : Form
+    public partial class DrawConfigEditForm : Form
     {
-        public MainForm()
+        public DrawConfigEditForm()
         {
             InitializeComponent();
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }

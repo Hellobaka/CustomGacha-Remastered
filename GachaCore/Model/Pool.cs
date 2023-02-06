@@ -9,6 +9,7 @@ namespace GachaCore.Model
     {
         [SugarColumn(IsPrimaryKey = true)]
         public string ID { get; set; } = "";
+        public string Name { get; set; } = "";
         public string BackgroundImagePath { get; set; } = "";
         /// <summary>
         /// New 图片相对路径
@@ -30,13 +31,13 @@ namespace GachaCore.Model
         /// New 图片绘制坐标 Y
         /// </summary>
         public int NewPicY { get; set; } = 0;
-        public string SingalGachaText { get; set; } = "";
+        public string SingleGachaText { get; set; } = "";
         public string MultiGachaText { get; set; } = "";
         public string Remark { get; set; } = "";
         /// <summary>
         /// 单抽指令
         /// </summary>
-        public string SingalGachaOrder { get; set; } = "#单抽指令";
+        public string SingleGachaOrder { get; set; } = "#单抽指令";
         /// <summary>
         /// 多抽指令
         /// </summary>
@@ -59,6 +60,12 @@ namespace GachaCore.Model
        
         public DateTime CreateTime { get; set; }
        
+        public static List<Pool> GetAllPools()
+        {
+            using var db = SQLHelper.GetInstance();
+            return db.Queryable<Pool>().ToList();
+        }
+
         public void CreateCache()
         {
             foreach (var item in CategoryList)
@@ -117,6 +124,20 @@ namespace GachaCore.Model
                 }
             }
             return targetCategory;
+        }
+
+        public Pool AddPool()
+        {
+            ID = Guid.NewGuid().ToString();
+            CreateTime = DateTime.Now;
+            using var db = SQLHelper.GetInstance();
+            return db.Insertable(this).ExecuteReturnEntity();
+        }
+
+        public void UpdatePool()
+        {
+            using var db = SQLHelper.GetInstance();
+            db.Updateable(this).ExecuteCommand();
         }
     }
 }

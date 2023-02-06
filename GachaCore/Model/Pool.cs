@@ -1,7 +1,7 @@
 ﻿using SqlSugar;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace GachaCore.Model
 {
@@ -85,22 +85,26 @@ namespace GachaCore.Model
             return ls;
         }
 
-        public GachaItem GetItem()
+        public (GachaItem, bool) GetItem()
         {
-            var category = RandomGetCategory();
-            return category.RandomGetGachaItem(false);
+            var category = RandomGetCategory(false);
+            return (category.RandomGetGachaItem(), category.IsBaodi);
         }
 
-        public GachaItem GetBaodiItem()
+        public (GachaItem, bool) GetBaodiItem()
         {
-            var category = RandomGetCategory();
-            return category.RandomGetGachaItem(true);
+            var category = RandomGetCategory(true);
+            return (category.RandomGetGachaItem(), category.IsBaodi);
         }
 
-        public Category RandomGetCategory()
+        public Category RandomGetCategory(bool isBaodi = false)
         {
             double totalProbablity = 0, currentProbablity = 0, targertProbablity = Common.Random.NextDouble() * 100;
             var categories = CreateCategoryList();
+            if(isBaodi)
+            {
+                categories = categories.Where(x => x.IsBaodi).ToList();
+            }
             categories.ForEach(x => totalProbablity += x.Probablity);
             Category targetCategory = null;
             foreach (var item in categories)

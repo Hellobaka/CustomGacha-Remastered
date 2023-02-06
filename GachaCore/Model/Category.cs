@@ -12,6 +12,7 @@ namespace GachaCore.Model
         public string PoolID { get; set; } = "";
         public string Name { get; set; } = "";
         public double Probablity { get; set; }
+        public bool IsBaodi { get; set; }
         [SugarColumn(IsJson = true, ColumnDataType = "Text")]
         public List<string> ItemList { get; set; } = new List<string>();
         public DateTime CreateTime { get; set; }
@@ -22,14 +23,10 @@ namespace GachaCore.Model
             return db.Queryable<Category>().Where(x => x.ID == id).First();
         }
        
-        public GachaItem RandomGetGachaItem(bool isBaodi = false)
+        public GachaItem RandomGetGachaItem()
         {
             double totalProbablity = 0, currentProbablity = 0, targertProbablity = Common.Random.NextDouble() * 100;
             var gachaItems = CreateGachaItemList();
-            if(isBaodi)
-            {
-                gachaItems = gachaItems.Where(x => x.IsBaodi).ToList();
-            }
             gachaItems.ForEach(x => totalProbablity += x.Probablity);
             GachaItem targetGachaItem = null;
             foreach (var item in gachaItems)

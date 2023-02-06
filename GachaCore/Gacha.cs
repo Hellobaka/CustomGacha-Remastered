@@ -19,16 +19,17 @@ namespace GachaCore
                 }
                 GachaHistory.AddGachaHistory(new GachaHistory
                 {
-                    Count = item.Count,
+                    Count = item.Item1.Count,
                     CreateTime = DateTime.Now,
-                    IsBaodi = item.IsBaodi,
-                    ItemName = item.Name,
+                    IsBaodi = item.Item2,
+                    ItemName = item.Item1.Name,
                     PoolID = pool.ID,
                     QQ = user.QQ
                 });
             }
             user.TotalGachaCount += count;
             user.UpdateUser();
+            GachaItem.SaveItems(ls);
             return ls;
         }
     }

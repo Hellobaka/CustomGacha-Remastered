@@ -14,11 +14,11 @@ namespace GachaCore.Model
         public double UpProbablity { get; set; }
         public string MainImagePath { get; set; } = "";
         public string BackgroundImagePath { get; set; } = "";
+        public bool CanBeFolded { get; set; }
         public int Count { get; set; }
         public int MinCount { get; set; }
         public int MaxCount { get; set; }
         public bool IsUP { get; set; }
-        public bool IsBaodi { get; set; }
         public int Value { get; set; }
         public string Remark { get; set; }
         [SugarColumn(IsJson = true, ColumnDataType = "Text")]
@@ -29,6 +29,11 @@ namespace GachaCore.Model
         {
             using var db = SQLHelper.GetInstance();
             return db.Queryable<GachaItem>().Where(x => x.ID == id).First();
+        }
+        public static void SaveItems(List<GachaItem> items)
+        {
+            using var db = SQLHelper.GetInstance();
+            db.Insertable(items).ExecuteCommandAsync();
         }
     }
 }

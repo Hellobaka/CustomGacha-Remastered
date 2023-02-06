@@ -9,6 +9,7 @@ namespace GachaCore.Model
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public int ID { get; set; }
         public long QQ { get; set; }
+        public string ItemID { get; set; }
         public string PoolID { get; set; }
         public string ItemName { get; set; }
         public bool IsBaodi { get; set; }
@@ -26,7 +27,24 @@ namespace GachaCore.Model
         public static GachaHistory AddGachaHistory(GachaHistory gachaHistory)
         {
             using var db = SQLHelper.GetInstance();
-            return db.Insertable(gachaHistory).ExecuteReturnEntity();
+            if (Cache.GachaItemsCache[gachaHistory.ItemID].CanBeFolded)
+            {
+                var item = db.Queryable<GachaHistory>().Where(x => x.ItemID == gachaHistory.ItemID && gachaHistory.QQ == x.QQ).First();
+                if (item != null)
+                {
+                    item.Count += gachaHistory.Count;
+                    db.Updateable(item).ExecuteCommand();
+                    return item;
+                }
+                else
+                {
+                    return db.Insertable(item).ExecuteReturnEntity();
+                }
+            }
+            else
+            {
+                return db.Insertable(gachaHistory).ExecuteReturnEntity();
+            }
         }
     }
 }

@@ -45,21 +45,21 @@ namespace GachaCore.Model
         /// <summary>
         /// 多抽抽取次数
         /// </summary>
-       
+
         public int MultiGachaNumber { get; set; } = 10;
-       
+
         public int PerGachaCost { get; set; }
-       
+
         public int BaodiCount { get; set; }
-       
+
         [SugarColumn(IsJson = true, ColumnDataType = "Text")]
         public List<string> CategoryList { get; set; } = new List<string>();
-       
+
         [SugarColumn(IsJson = true, ColumnDataType = "Text")]
         public PoolDrawConfig DrawConfig { get; set; } = new PoolDrawConfig();
-       
+
         public DateTime CreateTime { get; set; }
-       
+
         public static List<Pool> GetAllPools()
         {
             using var db = SQLHelper.GetInstance();
@@ -80,7 +80,7 @@ namespace GachaCore.Model
                 }
             }
         }
-       
+
         public List<Category> CreateCategoryList()
         {
             CreateCache();
@@ -108,7 +108,7 @@ namespace GachaCore.Model
         {
             double totalProbablity = 0, currentProbablity = 0, targertProbablity = Common.Random.NextDouble() * 100;
             var categories = CreateCategoryList();
-            if(isBaodi)
+            if (isBaodi)
             {
                 categories = categories.Where(x => x.IsBaodi).ToList();
             }
@@ -134,10 +134,22 @@ namespace GachaCore.Model
             return db.Insertable(this).ExecuteReturnEntity();
         }
 
+        public void DeletePool()
+        {
+            using var db = SQLHelper.GetInstance();
+            db.Deleteable(this).ExecuteCommand();
+        }
+
         public void UpdatePool()
         {
             using var db = SQLHelper.GetInstance();
             db.Updateable(this).ExecuteCommand();
+        }
+
+        public static Pool GetPoolByID(string poolID)
+        {
+            using var db = SQLHelper.GetInstance();
+            return db.Queryable<Pool>().Where(x => x.ID == poolID).First();
         }
     }
 }

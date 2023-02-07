@@ -8,7 +8,7 @@ namespace GachaCore.Model
     public class Category
     {
         [SugarColumn(IsPrimaryKey = true)]
-        public string ID { get; set; }
+        public string ID { get; set; } = "";
         public string PoolID { get; set; } = "";
         public string Name { get; set; } = "";
         public double Probablity { get; set; }
@@ -65,6 +65,29 @@ namespace GachaCore.Model
                     Cache.GachaItemsCache.Add(item, GachaItem.GetItemByID(item));
                 }
             }
+        }
+
+        public Category AddCategory()
+        {
+            ID = Guid.NewGuid().ToString();
+            CreateTime = DateTime.Now;
+            using var db = SQLHelper.GetInstance();
+            return db.Insertable(this).ExecuteReturnEntity();
+        }
+
+        public void UpdateCategory()
+        {
+            using var db = SQLHelper.GetInstance();
+            db.Updateable(this).ExecuteCommand();
+        }
+
+        public void DeleteCategory()
+        {
+            using var db = SQLHelper.GetInstance();
+            db.Deleteable(this).ExecuteCommand();
+            var pool = Pool.GetPoolByID(PoolID);
+            pool.CategoryList.Remove(ID);
+            pool.UpdatePool();
         }
     }
 }

@@ -7,6 +7,11 @@ namespace GachaCore.Model
 {
     public class GachaItem
     {
+        public override string ToString()
+        {
+            return $"Name={Name}, Count={Count}";
+        }
+
         [SugarColumn(IsPrimaryKey = true)]
         public string ID { get; set; }
         public string Name { get; set; } = "";

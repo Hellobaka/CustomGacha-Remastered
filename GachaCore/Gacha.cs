@@ -1,11 +1,15 @@
 ﻿using GachaCore.Model;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace GachaCore
 {
     public static class Gacha
     {
+        public static Dictionary<string, PluginExecutor> PluginExectors { get; set; } = new Dictionary<string, PluginExecutor>();
+
         public static List<GachaItem> CallGacha(this Pool pool, User user, int count)
         {
             List<GachaItem> ls = new List<GachaItem>();
@@ -52,6 +56,25 @@ namespace GachaCore
                 ls.Add(item.Item1);
             }
             return ls;
+        }
+
+        public static Bitmap DrawGachaImage(this Pool pool, List<GachaItem> items)
+        {
+            Bitmap background = (Bitmap)Image.FromFile(pool.BackgroundImagePath);
+            switch (pool.PoolDrawConfig.OrderOptional)
+            {
+                case OrderOptional.Increasing:
+                    items = items.OrderBy(x=>x.Value).ToList();
+                    break;
+                case OrderOptional.Descending:
+                    items = items.OrderByDescending(x=>x.Value).ToList();
+                    break;
+                case OrderOptional.None:
+                default:
+                    break;
+            }
+
+            return background;
         }
     }
 }

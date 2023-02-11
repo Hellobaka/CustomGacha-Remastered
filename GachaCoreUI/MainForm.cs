@@ -113,7 +113,7 @@ namespace GachaCoreUI
         {
             if (string.IsNullOrEmpty(CurrentPool.ID))
             {
-                ShowError("当前项目请先点新建");
+                ShowError("当前项目请先点新建或添加");
                 return;
             }
             CurrentPool.UpdatePool();
@@ -142,17 +142,21 @@ namespace GachaCoreUI
 
         private void ReloadGachaItems()
         {
+            GachaItemList = CurrentCategory.CreateGachaItemList();
+            LoadGachaItemList();
+            LoadGachaItemProperty();
+        }
 
+        private void LoadGachaItemList()
+        {
+            GachaItemListBox.Items.Clear();
+            GachaItemList.ForEach(x => GachaItemListBox.Items.Add($"{(x.IsUP ? "[Up] " : "")}{x.Name}"));
         }
 
         private void ReloadCategory()
         {
             EditCategoryFlag = false;
-            CategoryList.Clear();
-            foreach (var item in CurrentPool.CategoryList)
-            {
-                CategoryList.Add(Category.GetCategoryByID(item));
-            }
+            CategoryList = CurrentPool.CreateCategoryList();
             LoadCategoryList();
             LoadCategoryProperty();
         }
@@ -222,10 +226,10 @@ namespace GachaCoreUI
                 switch (categoryType.PropertyType.Name)
                 {
                     case "Double":
-                        categoryType.SetValue(CurrentPool, double.Parse(textBox.Text));
+                        categoryType.SetValue(CurrentCategory, double.Parse(textBox.Text));
                         break;
                     case "String":
-                        categoryType.SetValue(CurrentPool, textBox.Text);
+                        categoryType.SetValue(CurrentCategory, textBox.Text);
                         break;
                     default:
                         break;
@@ -239,33 +243,59 @@ namespace GachaCoreUI
             }
         }
 
-        private void Pool_BackPicImgBtn_Click(object sender, EventArgs e)
+        private void GachaItem_MainImgBtn_Click(object sender, EventArgs e)
         {
-            if (FileDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                Pool_BackgroundImagePathValue.Text = FileDialog.FileName;
-                FileDialog.FileName = "";
-                Pool_BackgroundImagePathValue.Focus();
-            }
+            ShowFileDialog(GachaItem_MainImagePathValue);
+        }
+
+        private void GachaItem_BackgroundImgBtn_Click(object sender, EventArgs e)
+        {
+            ShowFileDialog(GachaItem_BackgroundImagePathValue);
         }
 
         private void Pool_NewPicImgBtn_Click(object sender, EventArgs e)
         {
+            ShowFileDialog(Pool_NewPicPathValue);
+        }
+
+        private void Pool_RelativePathBtn_Click(object sender, EventArgs e)
+        {
+            if (DirectoryDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                Pool_RelativePathValue.Text = DirectoryDialog.SelectedPath;
+                FileDialog.InitialDirectory = DirectoryDialog.SelectedPath;
+            }
+        }
+
+        private void Pool_BackPicImgBtn_Click(object sender, EventArgs e)
+        {
+            ShowFileDialog(Pool_BackgroundImagePathValue);
+        }
+
+        private void Pool_PluginPathBtn_Click(object sender, EventArgs e)
+        {
+            FileDialog.Filter = "插件文件|*.dll|所有文件|*.*";
+            ShowFileDialog(Pool_PluginPathValue);
+            FileDialog.Filter = "PNG 图片|*.png|JPG 图片|*.jpg|所有文件|*.*";
+        }
+
+        private void ShowFileDialog(TextBox targetTextBox)
+        {
             if (FileDialog.ShowDialog(this) == DialogResult.OK)
             {
-                Pool_NewPicPathValue.Text = FileDialog.FileName;
+                targetTextBox.Text = FileDialog.FileName.Replace(FileDialog.InitialDirectory + "\\", "");
                 FileDialog.FileName = "";
-                Pool_NewPicPathValue.Focus();
+                targetTextBox.Focus();
             }
         }
 
         private void Pool_DrawConfigBtn_Click(object sender, EventArgs e)
         {
-            DrawConfigEditForm form = new();
+            PoolDrawConfigEditForm form = new();
             form.ShowDialog(this);
             if (form.SaveFlag)
             {
-                CurrentPool.DrawConfig = form.DrawConfig;
+                CurrentPool.PoolDrawConfig = form.DrawConfig;
             }
         }
 
@@ -331,9 +361,9 @@ namespace GachaCoreUI
                     CategoryListBox.SelectedIndex = CategoryListBox.Items.Count > 0 ? 0 : -1;
                     break;
                 case 2:
-                    CategoryStatusDisplay.Text = $"当前卡池：{CurrentPool.Name} - {CurrentCategory.Name}";
+                    GachaItemStatusDisplay.Text = $"当前卡池：{CurrentPool.Name} - {CurrentCategory.Name}";
                     ReloadGachaItems();
-                    CategoryListBox.SelectedIndex = CategoryListBox.Items.Count > 0 ? 0 : -1;
+                    GachaItemListBox.SelectedIndex = GachaItemListBox.Items.Count > 0 ? 0 : -1;
                     break;
             }
         }
@@ -361,6 +391,8 @@ namespace GachaCoreUI
             CurrentPool = new()
             {
                 Name = CurrentPool.Name,
+                RelativePath = CurrentPool.RelativePath,
+                PluginPath = CurrentPool.PluginPath,
                 BackgroundImagePath = CurrentPool.BackgroundImagePath,
                 NewPicPath = CurrentPool.NewPicPath,
                 NewPicWidth = CurrentPool.NewPicWidth,
@@ -376,7 +408,8 @@ namespace GachaCoreUI
                 PerGachaCost = CurrentPool.PerGachaCost,
                 BaodiCount = CurrentPool.BaodiCount,
                 CategoryList = CurrentPool.CategoryList,
-                DrawConfig = CurrentPool.DrawConfig,
+                PoolDrawConfig = CurrentPool.PoolDrawConfig.Clone(),
+                ItemDrawConfig = CurrentPool.ItemDrawConfig.Clone(),
             };
             LoadPoolProperty();
         }
@@ -407,14 +440,13 @@ namespace GachaCoreUI
             CurrentCategory = CurrentCategory.AddCategory();
             ReloadCategory();
             ShowInfo("ok");
-
         }
 
         private void CategoryEditBtn_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(CurrentCategory.ID))
             {
-                ShowError("当前项目请先点新建");
+                ShowError("当前项目请先点新建或添加");
                 return;
             }
             CurrentCategory.PoolID = CurrentPool.ID;
@@ -458,13 +490,11 @@ namespace GachaCoreUI
             CategoryListBox.SelectedIndex = -1;
             CurrentCategory = new()
             {
-                ID = CurrentCategory.ID,
                 PoolID = CurrentCategory.PoolID,
                 Name = CurrentCategory.Name,
                 Probablity = CurrentCategory.Probablity,
                 IsBaodi = CurrentCategory.IsBaodi,
                 ItemList = CurrentCategory.ItemList,
-                CreateTime = CurrentCategory.CreateTime,
             };
             LoadCategoryProperty();
         }
@@ -472,6 +502,207 @@ namespace GachaCoreUI
         private void Category_IsBaodiValue_CheckedChanged(object sender, EventArgs e)
         {
             CurrentCategory.IsBaodi = Category_IsBaodiValue.Checked;
+        }
+
+        private void CategoryListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CategoryListBox.SelectedIndex == -1)
+            {
+                return;
+            }
+            if (EditCategoryFlag && !ShowConfirm("当前存在未保存的更改，确认切换目录吗？"))
+            {
+                EditCategoryFlag = false;
+                CategoryListBox.SelectedIndex = CategoryList.IndexOf(CurrentCategory);
+                EditCategoryFlag = true;
+                return;
+            }
+            EditCategoryFlag = false;
+            CurrentCategory = CategoryList[CategoryListBox.SelectedIndex];
+            LoadCategoryProperty();
+        }
+
+        private void GachaItem_PropertyChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            string name = textBox.Name.Replace("GachaItem_", "");
+
+            var gachaItemType = CurrentGachaItem.GetType().GetProperty(name[..^"Value".Length]);
+            if (!EditGachaItemFlag)
+            {
+                EditGachaItemFlag = gachaItemType.GetValue(CurrentGachaItem).ToString() != textBox.Text;
+            }
+            try
+            {
+                switch (gachaItemType.PropertyType.Name)
+                {
+                    case "Double":
+                        gachaItemType.SetValue(CurrentGachaItem, double.Parse(textBox.Text));
+                        break;
+                    case "String":
+                        gachaItemType.SetValue(CurrentGachaItem, textBox.Text);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch
+            {
+                ShowError($"数值转换失败：{gachaItemType.Name}");
+                textBox.Text = gachaItemType.GetValue(CurrentGachaItem).ToString();
+                textBox.Focus();
+            }
+        }
+
+        private void GachaItem_CanBeFoldedValue_CheckedChanged(object sender, EventArgs e)
+        {
+            CurrentGachaItem.CanBeFolded = GachaItem_CanBeFoldedValue.Checked;
+        }
+
+        private void GachaItem_IsUpValue_CheckedChanged(object sender, EventArgs e)
+        {
+            CurrentGachaItem.IsUP = GachaItem_IsUpValue.Checked;
+        }
+
+        private void GachaItem_DrawConfigBtn_Click(object sender, EventArgs e)
+        {
+            ItemDrawConfigEditForm form = new();
+            form.ShowDialog(this);
+            if (form.SaveFlag)
+            {
+                CurrentPool.ItemDrawConfig = form.DrawConfig;
+            }
+        }
+
+        private void GachaItemListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (GachaItemListBox.SelectedIndex == -1)
+            {
+                return;
+            }
+            if (EditGachaItemFlag && !ShowConfirm("当前存在未保存的更改，确认切换卡池吗？"))
+            {
+                EditGachaItemFlag = false;
+                GachaItemListBox.SelectedIndex = GachaItemList.IndexOf(CurrentGachaItem);
+                EditGachaItemFlag = true;
+                return;
+            }
+            EditGachaItemFlag = false;
+            CurrentGachaItem = GachaItemList[GachaItemListBox.SelectedIndex];
+            LoadGachaItemProperty();
+        }
+
+        private void LoadGachaItemProperty()
+        {
+            var gachaItemType = CurrentGachaItem.GetType().GetProperties();
+
+            foreach (var item in gachaItemType)
+            {
+                string name = $"GachaItem_{item.Name}Value";
+                var control = Controls.Find(name, true);
+                if (control == null || control.Length != 1) continue;
+                if (control[0] is TextBox)
+                {
+                    control[0].Text = item.GetValue(CurrentGachaItem).ToString();
+                }
+                else if (control[0] is ComboBox)
+                {
+                    (control[0] as CheckBox).Checked = bool.Parse(item.GetValue(CurrentGachaItem).ToString());
+                }
+            }
+        }
+
+        private void GachaItem_NewBtn_Click(object sender, EventArgs e)
+        {
+            if (EditGachaItemFlag && !ShowConfirm("当前存在未保存的更改，确认新建吗？"))
+            {
+                return;
+            }
+            EditGachaItemFlag = false;
+            GachaItemListBox.SelectedIndex = -1;
+            CurrentGachaItem = new();
+            LoadGachaItemProperty();
+        }
+
+        private void GachaItem_AddBtn_Click(object sender, EventArgs e)
+        {
+            if (GachaItemList.Any(x => x.Name == CurrentGachaItem.Name))
+            {
+                if (ShowConfirm("存在同名单例，确认要重复添加吗？") is false)
+                {
+                    return;
+                }
+            }
+            CurrentGachaItem = CurrentGachaItem.AddItem();
+            CurrentCategory.AddGachaItem(CurrentGachaItem);
+            EditGachaItemFlag = false;
+            ReloadGachaItems();
+            ShowInfo("ok");
+        }
+
+        private void GachaItem_EditBtn_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(CurrentGachaItem.ID))
+            {
+                ShowError("当前项目请先点新建或添加");
+                return;
+            }
+            CurrentGachaItem.UpdateItem();
+            EditGachaItemFlag = false;
+            ReloadGachaItems();
+            ShowInfo("ok");
+        }
+
+        private void GachaItem_DeleteBtn_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(CurrentGachaItem.ID))
+            {
+                ShowError("当前项目请先点新建或添加");
+                return;
+            }
+            CurrentCategory.RemoveGachaItem(CurrentGachaItem);
+            EditGachaItemFlag = false;
+            ReloadGachaItems();
+            ShowInfo("ok");
+        }
+
+        private void GachaItem_CopyBtn_Click(object sender, EventArgs e)
+        {
+            if (EditCategoryFlag && !ShowConfirm("当前存在未保存的更改，确认复制吗？"))
+            {
+                return;
+            }
+            EditGachaItemFlag = false;
+            GachaItemListBox.SelectedIndex = -1;
+            CurrentGachaItem = new()
+            {
+                Name = CurrentGachaItem.Name,
+                Probablity = CurrentGachaItem.Probablity,
+                UpProbablity = CurrentGachaItem.UpProbablity,
+                MainImagePath = CurrentGachaItem.MainImagePath,
+                BackgroundImagePath = CurrentGachaItem.BackgroundImagePath,
+                CanBeFolded = CurrentGachaItem.CanBeFolded,
+                Count = CurrentGachaItem.Count,
+                MinCount = CurrentGachaItem.MinCount,
+                MaxCount = CurrentGachaItem.MaxCount,
+                IsUP = CurrentGachaItem.IsUP,
+                Value = CurrentGachaItem.Value,
+                Remark = CurrentGachaItem.Remark,
+            };
+            LoadGachaItemProperty();
+        }
+
+        private void GachaItem_RefreshBtn_Click(object sender, EventArgs e)
+        {
+            int index = GachaItemList.IndexOf(CurrentGachaItem);
+            ReloadGachaItems();
+            GachaItemListBox.SelectedIndex = index;
+            LoadGachaItemProperty();
+        }
+
+        private void GachaItem_QueryBtn_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

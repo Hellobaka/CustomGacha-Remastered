@@ -10,7 +10,7 @@
             Dictionary<string, string> langs = new();
             if (!File.Exists($"langs\\{name}.pak"))
             {
-                MessageBox.Show("文件缺失", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show("文件缺失", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
             foreach (var item in File.ReadAllLines($"langs\\{name}.pak"))

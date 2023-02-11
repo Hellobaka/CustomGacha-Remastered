@@ -2,9 +2,9 @@
 
 namespace GachaCoreUI
 {
-    public partial class DrawConfigEditForm : Form
+    public partial class PoolDrawConfigEditForm : Form
     {
-        public DrawConfigEditForm()
+        public PoolDrawConfigEditForm()
         {
             InitializeComponent();
         }
@@ -20,15 +20,16 @@ namespace GachaCoreUI
 
         private void DefaultBtn_Click(object sender, EventArgs e)
         {
-            DrawConfig = MainForm.Instance.CurrentPool.DrawConfig;
+            DrawConfig = MainForm.Instance.CurrentPool.PoolDrawConfig;
             LoadPoolProperty();
         }
 
         private void DrawConfigEditForm_Load(object sender, EventArgs e)
         {
             CurrentPoolDisplay.Text = $"当前卡池：{MainForm.Instance.CurrentPool.Name}";
-            DrawConfig = MainForm.Instance.CurrentPool.DrawConfig;
+            DrawConfig = MainForm.Instance.CurrentPool.PoolDrawConfig;
             LoadPoolProperty();
+            LanguagePackage.ApplyLanguagePackage(this, LanguagePackage.CurrentLanguage);
         }
 
         private void LoadPoolProperty()

@@ -1,6 +1,7 @@
 ﻿using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace GachaCore.Model
@@ -52,11 +53,24 @@ namespace GachaCore.Model
 
         public int BaodiCount { get; set; }
 
-        [SugarColumn(IsJson = true, ColumnDataType = "Text")]
-        public List<string> CategoryList { get; set; } = new List<string>();
+        [SugarColumn(IsIgnore = true)]
+        public List<Category> CategoryList { get; set; } = new List<Category>();
 
         [SugarColumn(IsJson = true, ColumnDataType = "Text")]
-        public PoolDrawConfig DrawConfig { get; set; } = new PoolDrawConfig();
+        public PoolDrawConfig PoolDrawConfig { get; set; } = new PoolDrawConfig();
+
+        [SugarColumn(IsJson = true, ColumnDataType = "Text")]
+        public ItemDrawConfig ItemDrawConfig { get; set; } = new ItemDrawConfig();
+
+        /// <summary>
+        /// 相对路径
+        /// </summary>
+        public string RelativePath { get; set; } = "";
+        
+        /// <summary>
+        /// 插件路径
+        /// </summary>
+        public string PluginPath { get; set; } = "";
 
         public DateTime CreateTime { get; set; }
 
@@ -70,24 +84,26 @@ namespace GachaCore.Model
         {
             foreach (var item in CategoryList)
             {
-                if (Cache.CategoriesCache.ContainsKey(item))
+                if (Cache.CategoriesCache.ContainsKey(item.ID))
                 {
                     continue;
                 }
                 else
                 {
-                    Cache.CategoriesCache.Add(item, Category.GetCategoryByID(item));
+                    Cache.CategoriesCache.Add(item.ID, item);
                 }
             }
         }
 
         public List<Category> CreateCategoryList()
         {
+            CategoryList.Clear();
+            using var db = SQLHelper.GetInstance();
+            var ls = db.Queryable<Category>().Where(x => x.PoolID == ID).ToList();
             CreateCache();
-            List<Category> ls = new List<Category>();
-            foreach (var item in CategoryList)
+            foreach (var item in ls)
             {
-                ls.Add(Cache.CategoriesCache[item]);
+                CategoryList.Add(item);
             }
             return ls;
         }
@@ -106,13 +122,14 @@ namespace GachaCore.Model
 
         public Category RandomGetCategory(bool isBaodi = false)
         {
-            double totalProbablity = 0, currentProbablity = 0, targertProbablity = Common.Random.NextDouble() * 100;
+            double totalProbablity = 0, currentProbablity = 0, targertProbablity = 0;
             var categories = CreateCategoryList();
             if (isBaodi)
             {
                 categories = categories.Where(x => x.IsBaodi).ToList();
             }
             categories.ForEach(x => totalProbablity += x.Probablity);
+            targertProbablity = Common.Random.NextDouble() * 100 * (totalProbablity / 100);
             Category targetCategory = null;
             foreach (var item in categories)
             {
@@ -150,6 +167,21 @@ namespace GachaCore.Model
         {
             using var db = SQLHelper.GetInstance();
             return db.Queryable<Pool>().Where(x => x.ID == poolID).First();
+        }
+
+        public void InitPlugin()
+        {
+            string pluginPath = Path.Combine(RelativePath, PluginPath);
+            if (Gacha.PluginExectors.ContainsKey(ID))
+            {
+                Gacha.PluginExectors[ID] = new PluginExecutor(pluginPath);
+            }
+            else
+            {
+                Gacha.PluginExectors.Add(ID, new PluginExecutor(pluginPath));
+            }
+            Gacha.PluginExectors[ID].LoadPlugin();
+            Gacha.PluginExectors[ID].CreateInterfaceInstance();
         }
     }
 }

@@ -35,15 +35,30 @@ namespace GachaCore.Model
         /// <summary>
         /// 换行之后Y坐标变化值，请不考虑图片大小
         /// </summary>
-        public int YChangeValue { get; set; }
+        public int YChange { get; set; }
         /// <summary>
         /// 换行之后X坐标变化值
         /// </summary>
-        public int XChangeValue { get; set; }
+        public int XChange { get; set; }
         /// <summary>
         /// 抽卡结束之后按价值的排序方式
         /// </summary>
         public OrderOptional OrderOptional { get; set; }
+      
+        public PoolDrawConfig Clone()
+        {
+            return new PoolDrawConfig
+            {
+                StartPointX = StartPointX,
+                StartPointY = StartPointY,
+                DrawXInterval = DrawXInterval,
+                DrawYInterval = DrawYInterval,
+                MaxX = MaxX,
+                YChange= YChange,
+                XChange = XChange,
+                OrderOptional = OrderOptional
+            };
+        }
     }
 
     public class ItemDrawConfig
@@ -67,6 +82,20 @@ namespace GachaCore.Model
         /// </summary>
         public int ImagePointX { get; set; }
         public int ImagePointY { get; set; }
+
+        public ItemDrawConfig Clone()
+        {
+            return new ItemDrawConfig
+            {
+                ImageWidth = ImageWidth,
+                ImageHeight = ImageHeight,
+                BackgroundImageWidth = BackgroundImageWidth,
+                BackgroundImageHeight = BackgroundImageHeight,
+                DrawOrder = DrawOrder,
+                ImagePointX = ImagePointX,
+                ImagePointY = ImagePointY,
+            };
+        }
     }
     /// <summary>
     /// 排序方式

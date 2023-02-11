@@ -13,7 +13,7 @@ namespace GachaCore.Model
         }
 
         [SugarColumn(IsPrimaryKey = true)]
-        public string ID { get; set; }
+        public string ID { get; set; } = "";
         public string Name { get; set; } = "";
         public double Probablity { get; set; }
         public double UpProbablity { get; set; }
@@ -25,9 +25,7 @@ namespace GachaCore.Model
         public int MaxCount { get; set; }
         public bool IsUP { get; set; }
         public int Value { get; set; }
-        public string Remark { get; set; }
-        [SugarColumn(IsJson = true, ColumnDataType = "Text")]
-        public ItemDrawConfig DrawConfig { get; set; } = new ItemDrawConfig();
+        public string Remark { get; set; } = "";
         public DateTime CreateTime { get; set; }
 
         public static GachaItem GetItemByID(string id)
@@ -39,6 +37,36 @@ namespace GachaCore.Model
         {
             using var db = SQLHelper.GetInstance();
             db.Insertable(items).ExecuteCommandAsync();
+        }
+
+        public GachaItem AddItem()
+        {
+            ID = Guid.NewGuid().ToString();
+            using var db = SQLHelper.GetInstance();
+            var item = db.Insertable(this).ExecuteReturnEntity();
+            if(Cache.GachaItemsCache.ContainsKey(ID))
+            {
+                Cache.GachaItemsCache[ID] = item;
+            }
+            else
+            {
+                Cache.GachaItemsCache.Add(ID, item);
+            }
+            return item;
+        }
+
+        public void UpdateItem()
+        {
+            using var db = SQLHelper.GetInstance();
+            db.Updateable(this).ExecuteCommandAsync();
+            if (Cache.GachaItemsCache.ContainsKey(ID))
+            {
+                Cache.GachaItemsCache[ID] = this;
+            }
+            else
+            {
+                Cache.GachaItemsCache.Add(ID, this);
+            }
         }
     }
 }

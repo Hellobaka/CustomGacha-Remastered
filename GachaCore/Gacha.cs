@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace GachaCore
 {
@@ -17,7 +19,7 @@ namespace GachaCore
             for (int i = 0; i < count; i++)
             {
                 var item = pool.GetItem();
-                if(lastBaodi >= pool.BaodiCount)
+                if (lastBaodi >= pool.BaodiCount)
                 {
                     lastBaodi = 0;
                     item = pool.GetBaodiItem();
@@ -58,22 +60,74 @@ namespace GachaCore
             return ls;
         }
 
-        public static Bitmap DrawGachaImage(this Pool pool, List<GachaItem> items)
+        public static Bitmap DrawGachaImage(this Pool pool, List<GachaItem> items, long QQ = 0)
         {
-            Bitmap background = (Bitmap)Image.FromFile(pool.BackgroundImagePath);
+            Bitmap background = (Bitmap)Image.FromFile(Path.Combine(pool.RelativePath, pool.BackgroundImagePath));
             switch (pool.PoolDrawConfig.OrderOptional)
             {
                 case OrderOptional.Increasing:
-                    items = items.OrderBy(x=>x.Value).ToList();
+                    items = items.OrderBy(x => x.Value).ToList();
                     break;
                 case OrderOptional.Descending:
-                    items = items.OrderByDescending(x=>x.Value).ToList();
+                    items = items.OrderByDescending(x => x.Value).ToList();
                     break;
                 case OrderOptional.None:
                 default:
                     break;
             }
+            PluginExecutor pluginExecutor;
+            if (PluginExectors.ContainsKey(pool.ID))
+            {
+                pluginExecutor= PluginExectors[pool.ID];
+            }
+            else
+            {
+                pluginExecutor = new PluginExecutor(pool.PluginPath);
+                pluginExecutor.LoadPlugin();
+                pluginExecutor.CreateInterfaceInstance();
+                PluginExectors[pool.ID] = pluginExecutor;
+            }
+            Point[] drawPoints = (Point[])pluginExecutor.DrawPoints.GetType().GetMethod("GetDrawPoints")
+                .Invoke(pluginExecutor.DrawPoints, new object[] { pool, pool.MultiGachaNumber });
 
+            List<Image> images2Draw = new List<Image>();
+            items.ForEach(x =>
+            {
+                Image destImg = Image.FromFile(Path.Combine(pool.RelativePath, x.MainImagePath));
+                if (pluginExecutor.DrawMainImage != null)
+                {
+                    destImg = (Bitmap)pluginExecutor.DrawMainImage.GetType().GetMethod("RedrawMainImage")
+                        .Invoke(pluginExecutor.DrawMainImage, new object[] { destImg, pool, x });
+                }
+
+                destImg = (Bitmap)pluginExecutor.DrawItem.GetType().GetMethod("DrawPicItem")
+                    .Invoke(pluginExecutor.DrawItem, new object[] { x, pool, destImg });
+                images2Draw.Add(destImg);
+            });
+
+            background = (Bitmap)pluginExecutor.DrawAllItems.GetType().GetMethod("DrawAllItems")
+                .Invoke(pluginExecutor.DrawAllItems, new object[] { images2Draw, items, drawPoints, background, pool });
+
+            if (pluginExecutor.FinallyDraw != null)
+            {
+                User user = User.GetUserByID(QQ);
+                if (user == null)
+                {
+                    Random rd = new Random();
+                    user = new User
+                    {
+                        Money = rd.Next(0, 10000),
+                        TotalGachaCount = rd.Next(0, 10),
+                        LastSignTime = DateTime.Now.AddSeconds(-1 * rd.Next(360, rd.Next(0, 72) * 3600)),
+                        TotalMoneyCount = rd.Next(pool.PerGachaCost * rd.Next(0, 500)),
+                        QQ = QQ,
+                        TotalSignTime = rd.Next(1000),
+                        RegistryTime = DateTime.Now.AddDays(-1 * rd.Next(0, 1000))
+                    };
+                }
+                background = (Bitmap)pluginExecutor.FinallyDraw.GetType().GetMethod("DrawAllItems")
+                    .Invoke(pluginExecutor.FinallyDraw, new object[] { background, drawPoints, items, user, pool });
+            }
             return background;
         }
     }

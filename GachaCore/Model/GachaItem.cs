@@ -26,6 +26,8 @@ namespace GachaCore.Model
         public bool IsUP { get; set; }
         public int Value { get; set; }
         public string Remark { get; set; } = "";
+        [SugarColumn(IsIgnore = true)]
+        public bool IsNew { get; set; }
         public DateTime CreateTime { get; set; }
 
         public static GachaItem GetItemByID(string id)

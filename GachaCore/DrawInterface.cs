@@ -1,5 +1,4 @@
 ﻿using GachaCore.Model;
-using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -78,12 +77,18 @@ namespace GachaCore
 
         public void LoadLocalAssembly()
         {
-            Plugin = Assembly.GetAssembly(typeof(PluginExecutor));
+            Plugin = Assembly.GetAssembly(typeof(DefaultDrawImplement));
         }
 
         public void CreateInterfaceInstance()
         {
             bool exceptionFlag = false;
+            DrawMainImage = null;
+            DrawItem = null;
+            DrawPoints = null;
+            FinallyDraw = null;
+            DrawAllItems = null;
+            GC.Collect();
             try
             {
                 foreach (var item in Plugin.GetTypes())
@@ -108,7 +113,7 @@ namespace GachaCore
                         FinallyDraw = Plugin.CreateInstance(item.FullName);
                     }
 
-                    if (item.GetInterface("DrawAllItems") != null)
+                    if (item.GetInterface("IDrawAllItems") != null)
                     {
                         DrawAllItems = Plugin.CreateInstance(item.FullName);
                     }
@@ -126,7 +131,7 @@ namespace GachaCore
             }
             finally
             {
-                if(exceptionFlag)
+                if (exceptionFlag)
                 {
                     LoadLocalAssembly();
                     CreateInterfaceInstance();
@@ -136,14 +141,85 @@ namespace GachaCore
     }
 
     // IDrawPoints -> IDrawMainImage -> IDrawItem -> IDrawAllItems -> IFinallyDraw
-    public class DefaultDrawImplement : IDrawItem, IDrawPoints
+    public class DefaultDrawImplement : IDrawItem, IDrawPoints, IDrawAllItems
     {
-        Bitmap IDrawItem.DrawPicItem(GachaItem item, Pool pool)
+        public Bitmap DrawAllItems(List<Image> allItemImages, List<GachaItem> gachaItems, Point[] drawPoints, Bitmap backgroundImg, Pool pool)
         {
-            throw new System.NotImplementedException();
+            using Graphics g = Graphics.FromImage(backgroundImg);
+            Bitmap newImage = null;
+            if(File.Exists(Path.Combine(pool.RelativePath, pool.NewPicPath)))
+            {
+                newImage = (Bitmap)Image.FromFile(Path.Combine(pool.RelativePath, pool.NewPicPath));
+            }
+            int index = 0;
+            foreach (var item in allItemImages)
+            {
+                g.DrawImage(item, new Rectangle(drawPoints[index], item.Size));
+                if (gachaItems[index].IsNew && newImage != null)
+                {
+                    Point newPoint = new Point(drawPoints[index].X + pool.NewPicX, drawPoints[index].Y + pool.NewPicY);
+                    g.DrawImage(newImage, new Rectangle(newPoint, new Size(pool.NewPicWidth, pool.NewPicHeight)));
+                }
+
+                index++;
+            }
+            newImage.Dispose();
+            return backgroundImg;
         }
 
-        Point[] IDrawPoints.GetDrawPoints(Pool pool, int count)
+        public Bitmap DrawPicItem(GachaItem item, Pool pool, Bitmap mainImage)
+        {
+            //不需要合成时请填写图片路径，忽略背景路径
+            string backgroundImagePath = Path.Combine(pool.RelativePath, item.BackgroundImagePath);
+            string imagePath = Path.Combine(pool.RelativePath, item.MainImagePath);
+            bool nobackgroundFlag = string.IsNullOrWhiteSpace(item.BackgroundImagePath);
+
+            if (!File.Exists(imagePath))
+            {
+                throw new FileNotFoundException($"卡片的图片文件不存在，在卡 {item.Name} 中 路径{imagePath}");
+            }
+            if (nobackgroundFlag is false && !File.Exists(backgroundImagePath))
+            {
+                throw new FileNotFoundException($"卡片的背景图片文件不存在，在卡 {item.Name} 中 路径{imagePath}");
+            }
+
+            ItemDrawConfig imageConfig = pool.ItemDrawConfig;
+            Point drawPoint = new Point(imageConfig.ImagePointX, imageConfig.ImagePointY);
+            Size destSize = new Size(imageConfig.ImageWidth, imageConfig.ImageHeight);
+            Size backGroundReSizeSize = new Size(imageConfig.BackgroundImageWidth, imageConfig.BackgroundImageHeight);
+            if (!string.IsNullOrWhiteSpace(item.BackgroundImagePath))
+            {
+                Image background = Image.FromFile(backgroundImagePath);
+                Bitmap backgroundResize = new Bitmap(background, backGroundReSizeSize);
+                switch (imageConfig.DrawOrder)
+                {
+                    case DrawOrder.ImageAboveBackground:
+                        using (Graphics g = Graphics.FromImage(backgroundResize))
+                        {
+                            g.DrawImage(mainImage, new Rectangle(drawPoint, destSize));
+                        }
+                        break;
+                    case DrawOrder.ImageBelowBackground:
+                        Bitmap emptyBitmap = new Bitmap(imageConfig.BackgroundImageWidth, imageConfig.BackgroundImageHeight);
+                        using (Graphics g = Graphics.FromImage(emptyBitmap))
+                        {
+                            g.DrawImage(mainImage, new Rectangle(drawPoint, destSize));
+                            g.DrawImage(backgroundResize, new Point(0, 0));
+                            backgroundResize = emptyBitmap;
+                        }
+                        break;
+                }
+                return backgroundResize;
+            }
+            else
+            {
+                Bitmap destBitmap = new Bitmap(mainImage, new Size(imageConfig.ImageWidth, imageConfig.ImageHeight));
+                mainImage.Dispose();
+                return destBitmap;
+            }
+        }
+
+        public Point[] GetDrawPoints(Pool pool, int count)
         {
             Point[] drawPoints = new Point[count];
             int x = pool.PoolDrawConfig.StartPointX, y = pool.PoolDrawConfig.StartPointY;
@@ -199,10 +275,10 @@ namespace GachaCore
         /// <summary>
         /// 自定义重新绘制结果子图片
         /// </summary>
-        /// <param name="item">描述需要绘制图片的类</param>
+        /// <param name="item">描述需要绘制图片的对象</param>
         /// <param name="pool">目标池</param>
         /// <returns>自定义绘制图片</returns>
-        Bitmap DrawPicItem(GachaItem item, Pool pool);
+        Bitmap DrawPicItem(GachaItem item, Pool pool, Bitmap mainImage);
     }
 
     /// <summary>

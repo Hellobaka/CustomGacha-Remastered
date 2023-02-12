@@ -13,7 +13,7 @@ namespace GachaCore.Model
         public int TotalSignTime { get; set; }
         public DateTime RegistryTime { get; set; }
         public DateTime LastSignTime { get; set; }
-     
+
         public bool CanSign()
         {
             DateTime dt = DateTime.Now;
@@ -21,7 +21,7 @@ namespace GachaCore.Model
                 , Common.SignRefreshTime.Hour, Common.SignRefreshTime.Minute, Common.SignRefreshTime.Second);
             return LastSignTime <= sign;
         }
-      
+
         public int Sign()
         {
             if (!CanSign()) return 0;
@@ -32,14 +32,14 @@ namespace GachaCore.Model
             UpdateUser();
             return sign;
         }
-      
+
         public static User Registry(long qq)
         {
             var user = new User
             {
                 QQ = qq,
                 Money = Common.Random.Next(Common.RegistryMoney),
-                RegistryTime = DateTime.Now,                
+                RegistryTime = DateTime.Now,
             };
             using var db = SQLHelper.GetInstance();
             db.Insertable(user).ExecuteCommand();
@@ -50,6 +50,12 @@ namespace GachaCore.Model
         {
             using var db = SQLHelper.GetInstance();
             db.Updateable(this).ExecuteCommand();
+        }
+
+        public static User GetUserByID(long id)
+        {
+            using var db = SQLHelper.GetInstance();
+            return db.Queryable<User>().Where(x => x.QQ == id).First();
         }
     }
 }

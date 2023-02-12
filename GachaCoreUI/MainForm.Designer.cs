@@ -39,6 +39,8 @@
             this.PoolReloadBtn = new System.Windows.Forms.Button();
             this.PoolNewBtn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.Pool_ItemDrawConfigBtn = new System.Windows.Forms.Button();
+            this.label44 = new System.Windows.Forms.Label();
             this.Pool_PluginPathBtn = new System.Windows.Forms.Button();
             this.Pool_RelativePathBtn = new System.Windows.Forms.Button();
             this.Pool_PluginPathValue = new System.Windows.Forms.TextBox();
@@ -155,8 +157,6 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.啊ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DirectoryDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.Pool_ItemDrawConfigBtn = new System.Windows.Forms.Button();
-            this.label44 = new System.Windows.Forms.Label();
             this.ModeSelector.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -342,6 +342,27 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(527, 645);
             this.panel1.TabIndex = 4;
+            // 
+            // Pool_ItemDrawConfigBtn
+            // 
+            this.Pool_ItemDrawConfigBtn.Location = new System.Drawing.Point(20, 1117);
+            this.Pool_ItemDrawConfigBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.Pool_ItemDrawConfigBtn.Name = "Pool_ItemDrawConfigBtn";
+            this.Pool_ItemDrawConfigBtn.Size = new System.Drawing.Size(96, 27);
+            this.Pool_ItemDrawConfigBtn.TabIndex = 45;
+            this.Pool_ItemDrawConfigBtn.Text = "修改";
+            this.Pool_ItemDrawConfigBtn.UseVisualStyleBackColor = true;
+            this.Pool_ItemDrawConfigBtn.Click += new System.EventHandler(this.GachaItem_DrawConfigBtn_Click);
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(19, 1090);
+            this.label44.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(127, 20);
+            this.label44.TabIndex = 44;
+            this.label44.Text = "ItemDrawConfig";
             // 
             // Pool_PluginPathBtn
             // 
@@ -1208,7 +1229,7 @@
             // 
             // GachaItem_RemarkValue
             // 
-            this.GachaItem_RemarkValue.Location = new System.Drawing.Point(20, 502);
+            this.GachaItem_RemarkValue.Location = new System.Drawing.Point(20, 617);
             this.GachaItem_RemarkValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_RemarkValue.Name = "GachaItem_RemarkValue";
             this.GachaItem_RemarkValue.Size = new System.Drawing.Size(471, 27);
@@ -1218,7 +1239,7 @@
             // label41
             // 
             this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(21, 480);
+            this.label41.Location = new System.Drawing.Point(21, 595);
             this.label41.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label41.Name = "label41";
             this.label41.Size = new System.Drawing.Size(64, 20);
@@ -1227,7 +1248,7 @@
             // 
             // GachaItem_ValueValue
             // 
-            this.GachaItem_ValueValue.Location = new System.Drawing.Point(19, 448);
+            this.GachaItem_ValueValue.Location = new System.Drawing.Point(19, 563);
             this.GachaItem_ValueValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_ValueValue.Name = "GachaItem_ValueValue";
             this.GachaItem_ValueValue.Size = new System.Drawing.Size(471, 27);
@@ -1237,7 +1258,7 @@
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(20, 426);
+            this.label37.Location = new System.Drawing.Point(20, 541);
             this.label37.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(49, 20);
@@ -1247,7 +1268,7 @@
             // GachaItem_IsUpValue
             // 
             this.GachaItem_IsUpValue.AutoSize = true;
-            this.GachaItem_IsUpValue.Location = new System.Drawing.Point(19, 399);
+            this.GachaItem_IsUpValue.Location = new System.Drawing.Point(19, 514);
             this.GachaItem_IsUpValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_IsUpValue.Name = "GachaItem_IsUpValue";
             this.GachaItem_IsUpValue.Size = new System.Drawing.Size(62, 24);
@@ -1258,7 +1279,7 @@
             // 
             // GachaItem_MaxCountValue
             // 
-            this.GachaItem_MaxCountValue.Location = new System.Drawing.Point(17, 368);
+            this.GachaItem_MaxCountValue.Location = new System.Drawing.Point(17, 483);
             this.GachaItem_MaxCountValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_MaxCountValue.Name = "GachaItem_MaxCountValue";
             this.GachaItem_MaxCountValue.Size = new System.Drawing.Size(471, 27);
@@ -1268,7 +1289,7 @@
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(18, 346);
+            this.label36.Location = new System.Drawing.Point(18, 461);
             this.label36.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(84, 20);
@@ -1277,7 +1298,7 @@
             // 
             // GachaItem_MinCountValue
             // 
-            this.GachaItem_MinCountValue.Location = new System.Drawing.Point(17, 314);
+            this.GachaItem_MinCountValue.Location = new System.Drawing.Point(17, 429);
             this.GachaItem_MinCountValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_MinCountValue.Name = "GachaItem_MinCountValue";
             this.GachaItem_MinCountValue.Size = new System.Drawing.Size(471, 27);
@@ -1287,7 +1308,7 @@
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(18, 292);
+            this.label33.Location = new System.Drawing.Point(18, 407);
             this.label33.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(81, 20);
@@ -1296,7 +1317,7 @@
             // 
             // GachaItem_CountValue
             // 
-            this.GachaItem_CountValue.Location = new System.Drawing.Point(17, 263);
+            this.GachaItem_CountValue.Location = new System.Drawing.Point(17, 378);
             this.GachaItem_CountValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_CountValue.Name = "GachaItem_CountValue";
             this.GachaItem_CountValue.Size = new System.Drawing.Size(471, 27);
@@ -1306,7 +1327,7 @@
             // label34
             // 
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(18, 241);
+            this.label34.Location = new System.Drawing.Point(18, 356);
             this.label34.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(53, 20);
@@ -1315,7 +1336,7 @@
             // 
             // GachaItem_BackgroundImgBtn
             // 
-            this.GachaItem_BackgroundImgBtn.Location = new System.Drawing.Point(392, 179);
+            this.GachaItem_BackgroundImgBtn.Location = new System.Drawing.Point(392, 296);
             this.GachaItem_BackgroundImgBtn.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_BackgroundImgBtn.Name = "GachaItem_BackgroundImgBtn";
             this.GachaItem_BackgroundImgBtn.Size = new System.Drawing.Size(96, 27);
@@ -1326,7 +1347,7 @@
             // 
             // GachaItem_MainImgBtn
             // 
-            this.GachaItem_MainImgBtn.Location = new System.Drawing.Point(392, 125);
+            this.GachaItem_MainImgBtn.Location = new System.Drawing.Point(392, 242);
             this.GachaItem_MainImgBtn.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_MainImgBtn.Name = "GachaItem_MainImgBtn";
             this.GachaItem_MainImgBtn.Size = new System.Drawing.Size(96, 27);
@@ -1337,7 +1358,7 @@
             // 
             // GachaItem_BackgroundImagePathValue
             // 
-            this.GachaItem_BackgroundImagePathValue.Location = new System.Drawing.Point(17, 179);
+            this.GachaItem_BackgroundImagePathValue.Location = new System.Drawing.Point(17, 294);
             this.GachaItem_BackgroundImagePathValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_BackgroundImagePathValue.Name = "GachaItem_BackgroundImagePathValue";
             this.GachaItem_BackgroundImagePathValue.Size = new System.Drawing.Size(367, 27);
@@ -1347,7 +1368,7 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(18, 157);
+            this.label25.Location = new System.Drawing.Point(18, 272);
             this.label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(173, 20);
@@ -1357,7 +1378,7 @@
             // 
             // GachaItem_MainImagePathValue
             // 
-            this.GachaItem_MainImagePathValue.Location = new System.Drawing.Point(17, 127);
+            this.GachaItem_MainImagePathValue.Location = new System.Drawing.Point(17, 242);
             this.GachaItem_MainImagePathValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_MainImagePathValue.Name = "GachaItem_MainImagePathValue";
             this.GachaItem_MainImagePathValue.Size = new System.Drawing.Size(367, 27);
@@ -1367,7 +1388,7 @@
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(18, 106);
+            this.label32.Location = new System.Drawing.Point(18, 221);
             this.label32.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(122, 20);
@@ -1377,7 +1398,7 @@
             // GachaItem_CanBeFoldedValue
             // 
             this.GachaItem_CanBeFoldedValue.AutoSize = true;
-            this.GachaItem_CanBeFoldedValue.Location = new System.Drawing.Point(17, 214);
+            this.GachaItem_CanBeFoldedValue.Location = new System.Drawing.Point(17, 329);
             this.GachaItem_CanBeFoldedValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_CanBeFoldedValue.Name = "GachaItem_CanBeFoldedValue";
             this.GachaItem_CanBeFoldedValue.Size = new System.Drawing.Size(127, 24);
@@ -1388,7 +1409,7 @@
             // 
             // GachaItem_NameValue
             // 
-            this.GachaItem_NameValue.Location = new System.Drawing.Point(18, -25);
+            this.GachaItem_NameValue.Location = new System.Drawing.Point(18, 90);
             this.GachaItem_NameValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_NameValue.Name = "GachaItem_NameValue";
             this.GachaItem_NameValue.Size = new System.Drawing.Size(471, 27);
@@ -1398,7 +1419,7 @@
             // label30
             // 
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(19, -47);
+            this.label30.Location = new System.Drawing.Point(19, 68);
             this.label30.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(52, 20);
@@ -1408,7 +1429,7 @@
             // GachaItem_CreateTimeValue
             // 
             this.GachaItem_CreateTimeValue.Enabled = false;
-            this.GachaItem_CreateTimeValue.Location = new System.Drawing.Point(20, 556);
+            this.GachaItem_CreateTimeValue.Location = new System.Drawing.Point(20, 671);
             this.GachaItem_CreateTimeValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_CreateTimeValue.Name = "GachaItem_CreateTimeValue";
             this.GachaItem_CreateTimeValue.Size = new System.Drawing.Size(471, 27);
@@ -1418,7 +1439,7 @@
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(21, 534);
+            this.label27.Location = new System.Drawing.Point(21, 649);
             this.label27.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(93, 20);
@@ -1427,7 +1448,7 @@
             // 
             // GachaItem_UpProbablityValue
             // 
-            this.GachaItem_UpProbablityValue.Location = new System.Drawing.Point(17, 77);
+            this.GachaItem_UpProbablityValue.Location = new System.Drawing.Point(17, 192);
             this.GachaItem_UpProbablityValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_UpProbablityValue.Name = "GachaItem_UpProbablityValue";
             this.GachaItem_UpProbablityValue.Size = new System.Drawing.Size(471, 27);
@@ -1437,7 +1458,7 @@
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(18, 55);
+            this.label28.Location = new System.Drawing.Point(18, 170);
             this.label28.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(105, 20);
@@ -1446,7 +1467,7 @@
             // 
             // GachaItem_ProbablityValue
             // 
-            this.GachaItem_ProbablityValue.Location = new System.Drawing.Point(17, 26);
+            this.GachaItem_ProbablityValue.Location = new System.Drawing.Point(17, 141);
             this.GachaItem_ProbablityValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_ProbablityValue.Name = "GachaItem_ProbablityValue";
             this.GachaItem_ProbablityValue.Size = new System.Drawing.Size(471, 27);
@@ -1456,7 +1477,7 @@
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(18, 4);
+            this.label29.Location = new System.Drawing.Point(18, 119);
             this.label29.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(84, 20);
@@ -1466,7 +1487,7 @@
             // GachaItem_IDValue
             // 
             this.GachaItem_IDValue.Enabled = false;
-            this.GachaItem_IDValue.Location = new System.Drawing.Point(17, -80);
+            this.GachaItem_IDValue.Location = new System.Drawing.Point(17, 35);
             this.GachaItem_IDValue.Margin = new System.Windows.Forms.Padding(4);
             this.GachaItem_IDValue.Name = "GachaItem_IDValue";
             this.GachaItem_IDValue.Size = new System.Drawing.Size(471, 27);
@@ -1476,7 +1497,7 @@
             // label31
             // 
             this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(18, -102);
+            this.label31.Location = new System.Drawing.Point(18, 13);
             this.label31.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(24, 20);
@@ -1547,27 +1568,6 @@
             this.啊ToolStripMenuItem.Name = "啊ToolStripMenuItem";
             this.啊ToolStripMenuItem.Size = new System.Drawing.Size(38, 24);
             this.啊ToolStripMenuItem.Text = "啊";
-            // 
-            // Pool_ItemDrawConfigBtn
-            // 
-            this.Pool_ItemDrawConfigBtn.Location = new System.Drawing.Point(20, 1117);
-            this.Pool_ItemDrawConfigBtn.Margin = new System.Windows.Forms.Padding(4);
-            this.Pool_ItemDrawConfigBtn.Name = "Pool_ItemDrawConfigBtn";
-            this.Pool_ItemDrawConfigBtn.Size = new System.Drawing.Size(96, 27);
-            this.Pool_ItemDrawConfigBtn.TabIndex = 45;
-            this.Pool_ItemDrawConfigBtn.Text = "修改";
-            this.Pool_ItemDrawConfigBtn.UseVisualStyleBackColor = true;
-            this.Pool_ItemDrawConfigBtn.Click += new System.EventHandler(this.GachaItem_DrawConfigBtn_Click);
-            // 
-            // label44
-            // 
-            this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(19, 1090);
-            this.label44.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(127, 20);
-            this.label44.TabIndex = 44;
-            this.label44.Text = "ItemDrawConfig";
             // 
             // MainForm
             // 

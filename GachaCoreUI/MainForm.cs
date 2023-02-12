@@ -260,6 +260,7 @@ namespace GachaCoreUI
 
         private void Pool_RelativePathBtn_Click(object sender, EventArgs e)
         {
+            Pool_RelativePathValue.Focus();
             if (DirectoryDialog.ShowDialog(this) == DialogResult.OK)
             {
                 Pool_RelativePathValue.Text = DirectoryDialog.SelectedPath;
@@ -281,6 +282,7 @@ namespace GachaCoreUI
 
         private void ShowFileDialog(TextBox targetTextBox)
         {
+            targetTextBox.Focus();
             if (FileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 targetTextBox.Text = FileDialog.FileName.Replace(FileDialog.InitialDirectory + "\\", "");
@@ -326,13 +328,17 @@ namespace GachaCoreUI
         private void PoolSingleTestBtn_Click(object sender, EventArgs e)
         {
             var r = CurrentPool.CallGacha(1);
-            r.ForEach(x => Debug.WriteLine(x.ToString()));
+            var img = CurrentPool.DrawGachaImage(r);
+            img.Save("1.png");
+            ShowInfo("保存完成");
         }
 
         private void PoolMultiTestBtn_Click(object sender, EventArgs e)
         {
             var r = CurrentPool.CallGacha(CurrentPool.MultiGachaNumber);
-            r.ForEach(x => Debug.WriteLine(x.ToString()));
+            var img = CurrentPool.DrawGachaImage(r);
+            img.Save("1.png");
+            ShowInfo("保存完成");
         }
 
         private void Pool_BackgroundImagePathValue_KeyDown(object sender, KeyEventArgs e)
@@ -361,6 +367,11 @@ namespace GachaCoreUI
                     CategoryListBox.SelectedIndex = CategoryListBox.Items.Count > 0 ? 0 : -1;
                     break;
                 case 2:
+                    if(CategoryListBox.SelectedIndex == -1)
+                    {
+                        ShowInfo("请先选择一个目录");
+                        return;
+                    }
                     GachaItemStatusDisplay.Text = $"当前卡池：{CurrentPool.Name} - {CurrentCategory.Name}";
                     ReloadGachaItems();
                     GachaItemListBox.SelectedIndex = GachaItemListBox.Items.Count > 0 ? 0 : -1;
@@ -536,6 +547,9 @@ namespace GachaCoreUI
             {
                 switch (gachaItemType.PropertyType.Name)
                 {
+                    case "Int32":
+                        gachaItemType.SetValue(CurrentGachaItem, int.Parse(textBox.Text));
+                        break;
                     case "Double":
                         gachaItemType.SetValue(CurrentGachaItem, double.Parse(textBox.Text));
                         break;
